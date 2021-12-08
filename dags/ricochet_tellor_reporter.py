@@ -5,6 +5,7 @@ Tellor Contract Poll
 - Parse logs and insert them into the data warehouse
 
 """
+
 from airflow import DAG
 from airflow.models import Variable
 from datetime import datetime, timedelta
@@ -49,9 +50,7 @@ done = BashOperator(
 
 web3 = Web3Hook(web3_conn_id='infura').http_client
 current_nonce = web3.eth.getTransactionCount(REPORTER_WALLET_ADDRESS)
-nonce_offset = 0
-
-for asset_id, request_id in ASSETS.items():
+for nonce_offset, (asset_id, request_id) in enumerate(ASSETS.items()):
 
     price_check = CoinGeckoPriceOperator(
         task_id="price_check_"+asset_id,
@@ -83,4 +82,3 @@ for asset_id, request_id in ASSETS.items():
     )
 
     done << confirm_oracle_update << oracle_update << price_check
-    nonce_offset += 1

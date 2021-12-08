@@ -101,17 +101,16 @@ class EthereumEventstoPostgresOperator(BaseOperator):
         """
         Source: banteg/tellor
         """
-        decoders = {
-            event_abi_to_log_topic(abi): partial(get_event_data, self.web3.codec, abi)
-            for abi in contract_abi if abi['type'] == 'event'
-        }
         # fix for byte nonce in events
         # nonce_string_abi = next(x for x in contract_abi if x.get('name') == 'NonceSubmitted')
         # nonce_string_topic = event_abi_to_log_topic(nonce_string_abi)
         # nonce_bytes_abi = deepcopy(nonce_string_abi)
         # nonce_bytes_abi['inputs'][1]['type'] = 'bytes'
         # decoders[nonce_string_topic] = partial(self._decode_log_with_fallback, [nonce_string_abi, nonce_bytes_abi])
-        return decoders
+        return {
+            event_abi_to_log_topic(abi): partial(get_event_data, self.web3.codec, abi)
+            for abi in contract_abi if abi['type'] == 'event'
+        }
 
 
     def _decode_log_with_fallback(self, abis_to_try, log):
