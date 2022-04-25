@@ -63,6 +63,8 @@ done = BashOperator(
     dag=dag,
 )
 
+dagRun = []
+
 for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items()):
 
     # Update input price
@@ -102,7 +104,4 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
     )
     current_nonce += 3
 
-
-    distribute << update_a << update_b
-
-done
+done << distribute << update_a << update_b
