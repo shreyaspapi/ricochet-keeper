@@ -18,6 +18,7 @@ from blocksec_plugin.ethereum_transaction_confirmation_sensor import EthereumTra
 from blocksec_plugin.tellor_oracle_operator import TellorOracleOperator
 from blocksec_plugin.ricochet_distributeV2_operator import RicochetDistributeOperator
 from blocksec_plugin.ricochet_update_price_operator import RicochetUpdatePriceOperator
+from airflow.models.baseoperator import chain
 
 
 DISTRIBUTOR_WALLET_ADDRESS = Variable.get("distributor-v2-address")
@@ -104,4 +105,8 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
     )
     current_nonce += 3
 
-done << distribute << update_a << update_b
+    dagRun.append(update_b)
+    dagRun.append(update_a)
+    dagRun.append(distribute)
+
+done << chain(*dagRun)
