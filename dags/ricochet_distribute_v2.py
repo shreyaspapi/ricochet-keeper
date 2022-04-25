@@ -63,7 +63,7 @@ done = BashOperator(
     dag=dag,
 )
 
-for exchange_address, tokens in V2_EXCHANGE_ADDRESSES.items():
+for offset, exchange_address, tokens in enumerate(V2_EXCHANGE_ADDRESSES.items()):
 
     # Update input price
     update_a = RicochetUpdatePriceOperator(
@@ -74,9 +74,10 @@ for exchange_address, tokens in V2_EXCHANGE_ADDRESSES.items():
         gas=3000000,
         contract_address=exchange_address,
         token_address=tokens[0],
-        nonce=current_nonce,
+        nonce=current_nonce + offset,
         dag=dag
     )
+    current_nonce += 1
 
     update_b = RicochetUpdatePriceOperator(
         task_id="update_b_" + exchange_address,
@@ -86,9 +87,11 @@ for exchange_address, tokens in V2_EXCHANGE_ADDRESSES.items():
         gas=3000000,
         contract_address=exchange_address,
         token_address=tokens[1],
-        nonce=current_nonce,
+        nonce=current_nonce + offset + 1,
         dag=dag
     )
+
+    current_nonce += 1
 
     distribute = RicochetDistributeOperator(
         task_id="distribute_" + exchange_address,
@@ -97,10 +100,10 @@ for exchange_address, tokens in V2_EXCHANGE_ADDRESSES.items():
         gas_multiplier=GAS_MULTIPLIER,
         gas=3000000,
         contract_address=exchange_address,
-        nonce=current_nonce,
+        nonce=current_nonce + offset + 2,
         dag=dag
     )
-    current_nonce += 1
+    current_nonce += 3
 
 
     done << distribute << update_a << update_b
