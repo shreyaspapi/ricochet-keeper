@@ -63,7 +63,7 @@ done = BashOperator(
     dag=dag,
 )
 
-for offset, exchange_address, tokens in enumerate(V2_EXCHANGE_ADDRESSES.items()):
+for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items()):
 
     # Update input price
     update_a = RicochetUpdatePriceOperator(
