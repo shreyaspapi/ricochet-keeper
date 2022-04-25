@@ -77,7 +77,6 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
         nonce=current_nonce + offset,
         dag=dag
     )
-    current_nonce += 1
 
     update_b = RicochetUpdatePriceOperator(
         task_id="update_b_" + exchange_address,
@@ -90,8 +89,6 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
         nonce=current_nonce + offset + 1,
         dag=dag
     )
-
-    current_nonce += 1
 
     distribute = RicochetDistributeOperator(
         task_id="distribute_" + exchange_address,
