@@ -103,5 +103,6 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
     current_nonce += 3
 
 
-    done << distribute << update_a << update_b
+    distribute << update_a << update_b
 
+done <<
