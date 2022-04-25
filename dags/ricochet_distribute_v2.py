@@ -77,7 +77,6 @@ for exchange_address, tokens in V2_EXCHANGE_ADDRESSES.items():
         nonce=current_nonce,
         dag=dag
     )
-    current_nonce += 1
 
     update_b = RicochetUpdatePriceOperator(
         task_id="update_b_" + exchange_address,
@@ -90,7 +89,6 @@ for exchange_address, tokens in V2_EXCHANGE_ADDRESSES.items():
         nonce=current_nonce,
         dag=dag
     )
-    current_nonce += 1
 
     distribute = RicochetDistributeOperator(
         task_id="distribute_" + exchange_address,
