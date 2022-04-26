@@ -64,9 +64,7 @@ done = BashOperator(
     dag=dag,
 )
 
-dagRun = []
-
-for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items()):
+for exchange_address, tokens in V2_EXCHANGE_ADDRESSES.items():
 
     # Update input price
     update_a = RicochetUpdatePriceOperator(
@@ -77,7 +75,7 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
         gas=3000000,
         contract_address=exchange_address,
         token_address=tokens[0],
-        nonce=current_nonce + offset,
+        nonce=current_nonce,
         dag=dag
     )
 
@@ -89,7 +87,7 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
         gas=3000000,
         contract_address=exchange_address,
         token_address=tokens[1],
-        nonce=current_nonce + offset + 1,
+        nonce=current_nonce + len(V2_EXCHANGE_ADDRESSES),
         dag=dag
     )
 
@@ -100,13 +98,9 @@ for offset, (exchange_address, tokens) in enumerate(V2_EXCHANGE_ADDRESSES.items(
         gas_multiplier=GAS_MULTIPLIER,
         gas=3000000,
         contract_address=exchange_address,
-        nonce=current_nonce + offset + 2,
+        nonce=current_nonce + 2 * len(V2_EXCHANGE_ADDRESSES),
         dag=dag
     )
-    current_nonce += 3
-
-    dagRun.append(update_b)
-    dagRun.append(update_a)
-    dagRun.append(distribute)
-
-done << chain(*dagRun)
+    current_nonce += 1
+    
+    done << distribute << update_a << update_b
